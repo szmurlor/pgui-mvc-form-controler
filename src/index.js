@@ -16,6 +16,23 @@ class Station extends React.Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    let s = nextProps.station;
+    this.state.value = s.value;
+    this.state.variance = s.expected - this.state.value;
+    this.state.color = s.value > s.expected ? "critical" : "auto";
+  }
+
+  onChangedValue = e => {
+    var v = e.target.value;
+    let s = this.props.station;
+    this.setState({
+      value: v,
+      variance: s.expected - v,
+      color: v > s.expected ? "critical" : "auto"
+    });
+  };
+
   render() {
     var s = this.props.station;
     return (
@@ -43,7 +60,12 @@ class Station extends React.Component {
             <li>
               <span>Zmierzona:</span>
               <span>
-                <input type="text" value={s.value} value={this.state.value} />
+                <input
+                  type="text"
+                  value={s.value}
+                  value={this.state.value}
+                  onChange={this.onChangedValue}
+                />
               </span>
             </li>
             <li>
