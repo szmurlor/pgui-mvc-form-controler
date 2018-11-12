@@ -9,6 +9,11 @@ class Station extends React.Component {
   constructor(props) {
     super(props);
     let s = props.station;
+    this.state = {
+      variance: s.expected - s.value,
+      value: s.value,
+      color: s.value > s.expected ? "critical" : "auto"
+    };
   }
 
   render() {
@@ -38,13 +43,19 @@ class Station extends React.Component {
             <li>
               <span>Zmierzona:</span>
               <span>
-                <input type="text" value={s.value} />
+                <input type="text" value={s.value} value={this.state.value} />
               </span>
             </li>
             <li>
               <span>Różnica:</span>
               <span>
-                <input type="text" readOnly value={s.expected - s.value} />
+                <input
+                  type="text"
+                  readOnly
+                  className={this.state.color}
+                  readOnly
+                  value={this.state.variance}
+                />
               </span>
             </li>
           </ul>
