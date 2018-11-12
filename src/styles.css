@@ -1,0 +1,22 @@
+.App {
+  font-family: sans-serif;
+  width: 32em;
+  height: 20em;
+}
+
+select.stations {
+  width: 10em;
+  height: 100%;
+}
+
+.left {
+  float: left;
+  height: 100%;
+  padding: 0.5em;
+}
+
+.right {
+  float: left;
+  height: 100%;
+  padding: 0.5em;
+}
