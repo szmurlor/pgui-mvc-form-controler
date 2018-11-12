@@ -5,43 +5,64 @@ import "./styles.css";
 
 import { DataSet } from "./data.js";
 
+class StationViewModel {
+  constructor(station) {
+    // CLONE
+    this.station = { ...station };
+  }
+
+  setValue(newValue) {
+    this.station.value = newValue;
+  }
+
+  getValue() {
+    return this.station.value;
+  }
+
+  setStation(s) {
+    // CLONE
+    this.station = { ...s };
+  }
+
+  getColorClass() {
+    let s = this.station;
+    return s.value > s.expected ? "critical" : "auto";
+  }
+
+  getVariance() {
+    let s = this.station;
+    return s.expected - s.value;
+  }
+}
+
 class Station extends React.Component {
   constructor(props) {
     super(props);
     let s = props.station;
     this.state = {
-      variance: s.expected - s.value,
-      value: s.value
+      model: new StationViewModel(s)
     };
-
     this.refVariance = React.createRef();
   }
 
   componentWillReceiveProps(nextProps) {
-    let s = nextProps.station;
-    this.state.value = s.value;
-    this.state.variance = s.expected - this.state.value;
-    this.updateColor(s.expected - s.value);
+    // this.setState(state => {
+    //   state.model.setStation(nextProps.station);
+    //   return state;
+    // });
+    this.setState(state => {
+      state.model = new StationViewModel(nextProps.station);
+      return state;
+    });
   }
 
   onChangedValue = e => {
     var v = e.target.value;
-    let s = this.props.station;
-    this.setState({
-      value: v,
-      variance: s.expected - v
+    this.setState(state => {
+      state.model.setValue(parseInt(v, 10));
+      return state;
     });
-    this.updateColor(s.expected - v);
   };
-
-  componentDidMount() {
-    this.updateColor(this.props.station.expected - this.state.value);
-  }
-
-  updateColor(v) {
-    let variance = this.refVariance.current;
-    variance.className = v < 0 ? "critical" : "auto";
-  }
 
   render() {
     var s = this.props.station;
@@ -72,7 +93,7 @@ class Station extends React.Component {
               <span>
                 <input
                   type="text"
-                  value={this.state.value}
+                  value={this.state.model.getValue()}
                   onChange={this.onChangedValue}
                 />
               </span>
@@ -84,9 +105,9 @@ class Station extends React.Component {
                   ref={this.refVariance}
                   type="text"
                   readOnly
-                  value={this.state.variance}
+                  value={this.state.model.getVariance()}
+                  className={this.state.model.getColorClass()}
                 />
-                {/*className={this.state.color}*/}
               </span>
             </li>
           </ul>
@@ -110,7 +131,7 @@ class App extends React.Component {
     var k = e.target.value;
     for (var idx in this.state.data.stations) {
       var s = this.state.data.stations[idx];
-      if (s.id == parseInt(k)) {
+      if (s.id === parseInt(k)) {
         selected = s;
         break;
       }
