@@ -16,6 +16,13 @@ class Station extends React.Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    let s = nextProps.station;
+    this.state.value = s.value;
+    this.state.variance = s.expected - this.state.value;
+    this.state.color = s.value > s.expected ? "critical" : "auto";
+  }
+
   render() {
     var s = this.props.station;
     return (
