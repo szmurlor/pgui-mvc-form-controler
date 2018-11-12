@@ -11,16 +11,17 @@ class Station extends React.Component {
     let s = props.station;
     this.state = {
       variance: s.expected - s.value,
-      value: s.value,
-      color: s.value > s.expected ? "critical" : "auto"
+      value: s.value
     };
+
+    this.refVariance = React.createRef();
   }
 
   componentWillReceiveProps(nextProps) {
     let s = nextProps.station;
     this.state.value = s.value;
     this.state.variance = s.expected - this.state.value;
-    this.state.color = s.value > s.expected ? "critical" : "auto";
+    this.updateColor(s.expected - s.value);
   }
 
   onChangedValue = e => {
@@ -28,10 +29,19 @@ class Station extends React.Component {
     let s = this.props.station;
     this.setState({
       value: v,
-      variance: s.expected - v,
-      color: v > s.expected ? "critical" : "auto"
+      variance: s.expected - v
     });
+    this.updateColor(s.expected - v);
   };
+
+  componentDidMount() {
+    this.updateColor(this.props.station.expected - this.state.value);
+  }
+
+  updateColor(v) {
+    let variance = this.refVariance.current;
+    variance.className = v < 0 ? "critical" : "auto";
+  }
 
   render() {
     var s = this.props.station;
@@ -62,7 +72,6 @@ class Station extends React.Component {
               <span>
                 <input
                   type="text"
-                  value={s.value}
                   value={this.state.value}
                   onChange={this.onChangedValue}
                 />
@@ -72,12 +81,12 @@ class Station extends React.Component {
               <span>Różnica:</span>
               <span>
                 <input
+                  ref={this.refVariance}
                   type="text"
-                  readOnly
-                  className={this.state.color}
                   readOnly
                   value={this.state.variance}
                 />
+                {/*className={this.state.color}*/}
               </span>
             </li>
           </ul>
